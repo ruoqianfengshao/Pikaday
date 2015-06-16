@@ -129,6 +129,33 @@
         if (isDate(date)) date.setHours(0,0,0,0);
     },
 
+    setTimeOfDay = function(date)
+    {
+        var hour, minute, second;
+        if (document.getElementById("pika-hour"))
+        {
+          hour = document.getElementById("pika-hour").value;
+        } else {
+          hour = 0;
+        }
+
+        if (document.getElementById("pika-minute"))
+        {
+          minute = document.getElementById("pika-minute").value;
+        } else {
+          minute = 0;
+        }
+
+        if (document.getElementById("pika-second"))
+        {
+          second = document.getElementById("pika-second").value;
+        } else {
+          second = 0;
+        }
+
+        if (isDate(date)) date.setHours(hour, minute, second, 0);
+    },
+
     compareDates = function(a,b)
     {
         // weak date comparison (use setToStartOfDay(date) to ensure correct result)
@@ -243,7 +270,8 @@
             nextMonth     : 'Next Month',
             months        : ['January','February','March','April','May','June','July','August','September','October','November','December'],
             weekdays      : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-            weekdaysShort : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+            weekdaysShort : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+            timeTitle     : ['hour', 'minute', 'second']
         },
 
         // Theme Classname
@@ -385,6 +413,65 @@
         return '<table cellpadding="0" cellspacing="0" class="pika-table">' + renderHead(opts) + renderBody(data) + '</table>';
     },
 
+    /**
+     * 渲染
+     */
+    renderSlide = function(opts, type)
+    {
+      // todo
+      return '<div class="slide-group">' + renderSelect(opts, type) + '</div>';
+    },
+
+    /**
+     * 渲染选择框
+     */
+     renderSelect = function(opts, type)
+     {
+       var hours = [],
+           minutes = [],
+           seconds = [],
+           str = "",
+           timeType, i;
+
+       timeType = {
+         hour: {
+           id: "pika-hour",
+           title: opts.i18n.timeTitle[0],
+           maxValue: 24
+         },
+         minute: {
+           id: "pika-minute",
+           title:  opts.i18n.timeTitle[1],
+           maxValue: 60
+         },
+         second: {
+           id: "pika-second",
+           title:  opts.i18n.timeTitle[2],
+           maxValue: 60
+         }
+       }
+
+       for (i = 0; i < timeType[type].maxValue; i++)
+       {
+         str += "<option>" + i + "</option>";
+       }
+
+       return '<label class="pika-time-label">' + timeType[type].title + ':</label><select class="pika-select" id="' + timeType[type].id + '">' + str + '</select>';
+
+     },
+
+    /**
+     * 渲染时间滑动条
+     */
+    renderTimeSlide = function(opts, data)
+    {
+      return '<div class="pika-slide">' + renderSlide(opts, "hour") + renderSlide(opts, "minute") + renderSlide(opts, "second") + renderSubmitBtn() + '</div>';
+    },
+
+    renderSubmitBtn = function()
+    {
+      return '<div class="pika-submit"><button class="pika-submit-btn">Done</button></div>';
+    },
 
     /**
      * Pikaday constructor
@@ -710,7 +797,7 @@
             }
 
             this._d = new Date(date.getTime());
-            setToStartOfDay(this._d);
+            setTimeOfDay(this._d);
             this.gotoDate(this._d);
 
             if (this._o.field) {
@@ -826,6 +913,14 @@
         },
 
         /**
+         * get options
+         */
+        getOptions: function(key)
+        {
+          return key ? this._o[key] : this._o;
+        },
+
+        /**
          * refresh the HTML
          */
         draw: function(force)
@@ -854,7 +949,7 @@
             }
 
             for (var c = 0; c < opts.numberOfMonths; c++) {
-                html += '<div class="pika-lendar">' + renderTitle(this, c, this.calendars[c].year, this.calendars[c].month, this.calendars[0].year) + this.render(this.calendars[c].year, this.calendars[c].month) + '</div>';
+                html += '<div class="pika-lendar">' + renderTitle(this, c, this.calendars[c].year, this.calendars[c].month, this.calendars[0].year) + this.render(this.calendars[c].year, this.calendars[c].month) + '</div>' + renderTimeSlide(this._o);
             }
 
             this.el.innerHTML = html;
@@ -878,11 +973,11 @@
         adjustPosition: function()
         {
             var field, pEl, width, height, viewportWidth, viewportHeight, scrollTop, left, top, clientRect;
-            
+
             if (this._o.container) return;
-            
+
             this.el.style.position = 'absolute';
-            
+
             field = this._o.trigger;
             pEl = field;
             width = this.el.offsetWidth;
@@ -931,13 +1026,14 @@
          */
         render: function(year, month)
         {
+          debugger;
             var opts   = this._o,
                 now    = new Date(),
                 days   = getDaysInMonth(year, month),
                 before = new Date(year, month, 1).getDay(),
                 data   = [],
                 row    = [];
-            setToStartOfDay(now);
+            setTimeOfDay(now);
             if (opts.firstDay > 0) {
                 before -= opts.firstDay;
                 if (before < 0) {
