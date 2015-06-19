@@ -189,10 +189,10 @@ http://nicolasgallagher.com/micro-clearfix-hack/
 }
 
 .pika-button:hover {
-    color: #fff !important;
-    background: #ff8000 !important;
-    box-shadow: none !important;
-    border-radius: 3px !important;
+    color: #fff;
+    background: #ff8000;
+    box-shadow: none;
+    border-radius: 3px;
 }
 
 /* styling for abbr */
@@ -201,3 +201,30 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     cursor: help;
 }
 
+.pika-slide {
+  float: left;
+  margin: 0 5px;
+}
+
+.pika-slide .slide-group {
+  border-top: 1px solid #ccc;
+  margin: 10px 0;
+  padding: 0 5px;
+}
+
+.pika-time-label {
+  margin-top: 10px;
+  font-size: 12px;
+  width: 50px;
+  text-align: left;
+  display: inline-block;
+}
+
+.pika-submit {
+  text-align: right;
+  margin-right: 5px;
+  margin-top: 40px;
+  padding-top: 10px;
+  border-top: 1px solid #ccc;
+
+}

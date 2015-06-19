@@ -129,6 +129,33 @@
         if (isDate(date)) date.setHours(0,0,0,0);
     },
 
+    setTimeOfDay = function(date)
+    {
+        var hour, minute, second;
+        if (document.getElementById("pika-hour"))
+        {
+          hour = document.getElementById("pika-hour").value;
+        } else {
+          hour = 0;
+        }
+
+        if (document.getElementById("pika-minute"))
+        {
+          minute = document.getElementById("pika-minute").value;
+        } else {
+          minute = 0;
+        }
+
+        if (document.getElementById("pika-second"))
+        {
+          second = document.getElementById("pika-second").value;
+        } else {
+          second = 0;
+        }
+
+        if (isDate(date)) date.setHours(hour, minute, second, 0);
+    },
+
     compareDates = function(a,b)
     {
         // weak date comparison (use setToStartOfDay(date) to ensure correct result)
@@ -237,13 +264,18 @@
         // Specify a DOM element to render the calendar in
         container: undefined,
 
+        // Render time select
+        showTime: false,
+
         // internationalization
         i18n: {
             previousMonth : 'Previous Month',
             nextMonth     : 'Next Month',
             months        : ['January','February','March','April','May','June','July','August','September','October','November','December'],
             weekdays      : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-            weekdaysShort : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+            weekdaysShort : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+            timeTitle     : ['hour', 'minute', 'second'],
+            confirmWord   : 'Done'
         },
 
         // Theme Classname
@@ -339,7 +371,7 @@
                 ((isMinYear && i < opts.minMonth) || (isMaxYear && i > opts.maxMonth) ? 'disabled' : '') + '>' +
                 opts.i18n.months[i] + '</option>');
         }
-        monthHtml = '<div class="pika-label">' + opts.i18n.months[month] + '<select class="pika-select pika-select-month">' + arr.join('') + '</select></div>';
+        monthHtml = '<div class="pika-label">' + opts.i18n.months[month] + '<select class="pika-select pika-select-month" tabindex="-1">' + arr.join('') + '</select></div>';
 
         if (isArray(opts.yearRange)) {
             i = opts.yearRange[0];
@@ -354,7 +386,7 @@
                 arr.push('<option value="' + i + '"' + (i === year ? ' selected': '') + '>' + (i) + '</option>');
             }
         }
-        yearHtml = '<div class="pika-label">' + year + opts.yearSuffix + '<select class="pika-select pika-select-year">' + arr.join('') + '</select></div>';
+        yearHtml = '<div class="pika-label">' + year + opts.yearSuffix + '<select class="pika-select pika-select-year" tabindex="-1">' + arr.join('') + '</select></div>';
 
         if (opts.showMonthAfterYear) {
             html += yearHtml + monthHtml;
@@ -385,6 +417,71 @@
         return '<table cellpadding="0" cellspacing="0" class="pika-table">' + renderHead(opts) + renderBody(data) + '</table>';
     },
 
+    /**
+     * 渲染
+     */
+    renderSlide = function(date, opts, type)
+    {
+      // todo
+      return '<div class="slide-group">' + renderSelect(date, opts, type) + '</div>';
+    },
+
+    /**
+     * 渲染选择框
+     */
+     renderSelect = function(date, opts, type)
+     {
+       date = date || new Date("2015-06-16 00:00:00");
+
+       var hours = [],
+           minutes = [],
+           seconds = [],
+           str = "",
+           timeType, i;
+
+       timeType = {
+         hour: {
+           id: "pika-hour",
+           title: opts.i18n.timeTitle[0],
+           maxValue: 24,
+           selectValue: date.getHours()
+         },
+         minute: {
+           id: "pika-minute",
+           title:  opts.i18n.timeTitle[1],
+           maxValue: 60,
+           selectValue: date.getMinutes()
+         },
+         second: {
+           id: "pika-second",
+           title:  opts.i18n.timeTitle[2],
+           maxValue: 60,
+           selectValue: date.getSeconds()
+         }
+       }
+
+       for (i = 0; i < timeType[type].maxValue; i++)
+       {
+           var selected = (i === timeType[type].selectValue) ? 'selected="selected"' : "";
+           str += '<option ' + selected + '>' + i + '</option>';
+       }
+
+       return '<label class="pika-time-label">' + timeType[type].title + ':</label><select class="pika-select" id="' + timeType[type].id + '">' + str + '</select>';
+
+     },
+
+    /**
+     * 渲染时间滑动条
+     */
+    renderTimeSlide = function(date, opts)
+    {
+      return '<div class="pika-slide">' + renderSlide(date, opts, "hour") + renderSlide(date, opts, "minute") + renderSlide(date, opts, "second") + renderSubmitBtn(opts) + '</div>';
+    },
+
+    renderSubmitBtn = function(opts)
+    {
+      return '<div class="pika-submit"><button class="pika-submit-btn">' + opts.i18n.confirmWord + '</button></div>';
+    },
 
     /**
      * Pikaday constructor
@@ -405,26 +502,43 @@
                 return;
             }
 
-            if (!hasClass(target.parentNode, 'is-disabled')) {
-                if (hasClass(target, 'pika-button') && !hasClass(target, 'is-empty')) {
-                    self.setDate(new Date(target.getAttribute('data-pika-year'), target.getAttribute('data-pika-month'), target.getAttribute('data-pika-day')));
-                    if (opts.bound) {
-                        sto(function() {
-                            self.hide();
-                            if (opts.field) {
-                                opts.field.blur();
-                            }
-                        }, 100);
+            if (hasClass(target, 'pika-submit-btn')) {
+                var dayTarget = document.getElementsByClassName('is-selected')[0].childNodes[0];
+                if (!hasClass(dayTarget.parentNode, 'is-disabled')) {
+                    if (hasClass(dayTarget, 'pika-button') && !hasClass(dayTarget, 'is-empty')) {
+                        self.setDate(new Date(dayTarget.getAttribute('data-pika-year'), dayTarget.getAttribute('data-pika-month'), dayTarget.getAttribute('data-pika-day')), false, opts.showTime);
+                        if (opts.bound) {
+                            sto(function() {
+                                self.hide();
+                                if (opts.field) {
+                                    opts.field.blur();
+                                }
+                            }, 100);
+                        }
+                        return;
                     }
-                    return;
+                    else if (hasClass(target, 'pika-prev')) {
+                        self.prevMonth();
+                    }
+                    else if (hasClass(target, 'pika-next')) {
+                        self.nextMonth();
+                    }
                 }
-                else if (hasClass(target, 'pika-prev')) {
-                    self.prevMonth();
-                }
-                else if (hasClass(target, 'pika-next')) {
-                    self.nextMonth();
+            } else {
+                if (!hasClass(target.parentNode, 'is-disabled')) {
+                    if (hasClass(target, 'pika-button') && !hasClass(target, 'is-empty')) {
+                        self.setDate(new Date(target.getAttribute('data-pika-year'), target.getAttribute('data-pika-month'), target.getAttribute('data-pika-day')), false, !opts.showTime);
+                        return;
+                    }
+                    else if (hasClass(target, 'pika-prev')) {
+                        self.prevMonth();
+                    }
+                    else if (hasClass(target, 'pika-next')) {
+                        self.nextMonth();
+                    }
                 }
             }
+
             if (!hasClass(target, 'pika-select')) {
                 if (e.preventDefault) {
                     e.preventDefault();
@@ -466,7 +580,9 @@
             else {
                 date = new Date(Date.parse(opts.field.value));
             }
-            self.setDate(isDate(date) ? date : null);
+            if (isDate(date)) {
+              self.setDate(date);
+            }
             if (!self._v) {
                 self.show();
             }
@@ -482,7 +598,7 @@
             self.show();
         };
 
-        self._onInputBlur = function()
+        self._onInputBlur = function(e)
         {
             // IE allows pika div to gain focus; catch blur the input field
             var pEl = document.activeElement;
@@ -493,10 +609,25 @@
             }
             while ((pEl = pEl.parentNode));
 
-            if (!self._c) {
-                self._b = sto(function() {
-                    self.hide();
-                }, 50);
+            e = e || window.event;
+            var target = e.target || e.srcElement;
+
+            if (opts.showTime)
+            {
+              if (hasClass(target, 'pika-submit-btn'))
+              {
+                if (!self._c) {
+                    self._b = sto(function() {
+                        self.hide();
+                    }, 50);
+                }
+              }
+            } else {
+              if (!self._c) {
+                  self._b = sto(function() {
+                      self.hide();
+                  }, 50);
+              }
             }
             self._c = false;
         };
@@ -597,7 +728,7 @@
 
             opts.field = (opts.field && opts.field.nodeName) ? opts.field : null;
 
-            opts.theme = (typeof opts.theme) == 'string' && opts.theme ? opts.theme : null;
+            opts.theme = (typeof opts.theme) === 'string' && opts.theme ? opts.theme : null;
 
             opts.bound = !!(opts.bound !== undefined ? opts.field && opts.bound : opts.field);
 
@@ -605,7 +736,7 @@
 
             opts.disableWeekends = !!opts.disableWeekends;
 
-            opts.disableDayFn = (typeof opts.disableDayFn) == "function" ? opts.disableDayFn : null;
+            opts.disableDayFn = (typeof opts.disableDayFn) === 'function' ? opts.disableDayFn : null;
 
             var nom = parseInt(opts.numberOfMonths, 10) || 1;
             opts.numberOfMonths = nom > 4 ? 4 : nom;
@@ -620,7 +751,7 @@
                 opts.maxDate = opts.minDate = false;
             }
             if (opts.minDate) {
-                this.setMinDate(opts.minDate)
+                this.setMinDate(opts.minDate);
             }
             if (opts.maxDate) {
                 setToStartOfDay(opts.maxDate);
@@ -679,7 +810,7 @@
         /**
          * set the current selection
          */
-        setDate: function(date, preventOnSelect)
+        setDate: function(date, preventOnSelect, setTime)
         {
             if (!date) {
                 this._d = null;
@@ -708,12 +839,21 @@
             }
 
             this._d = new Date(date.getTime());
-            setToStartOfDay(this._d);
+
+            if (this._o.showTime)
+            {
+                setTimeOfDay(this._d);
+            } else {
+                setToStartOfDay(this._d)
+            }
+
             this.gotoDate(this._d);
 
-            if (this._o.field) {
-                this._o.field.value = this.toString();
-                fireEvent(this._o.field, 'change', { firedBy: this });
+            if (setTime) {
+              if (this._o.field) {
+                  this._o.field.value = this.toString();
+                  fireEvent(this._o.field, 'change', { firedBy: this });
+              }
             }
             if (!preventOnSelect && typeof this._o.onSelect === 'function') {
                 this._o.onSelect.call(this, this.getDate());
@@ -824,6 +964,14 @@
         },
 
         /**
+         * get options
+         */
+        getOptions: function(key)
+        {
+          return key ? this._o[key] : this._o;
+        },
+
+        /**
          * refresh the HTML
          */
         draw: function(force)
@@ -855,6 +1003,11 @@
                 html += '<div class="pika-lendar">' + renderTitle(this, c, this.calendars[c].year, this.calendars[c].month, this.calendars[0].year) + this.render(this.calendars[c].year, this.calendars[c].month) + '</div>';
             }
 
+            if (this._o.showTime)
+            {
+              html += renderTimeSlide(this._d, this._o);
+            }
+
             this.el.innerHTML = html;
 
             if (opts.bound) {
@@ -875,13 +1028,19 @@
 
         adjustPosition: function()
         {
+            var field, pEl, width, height, viewportWidth, viewportHeight, scrollTop, left, top, clientRect;
+
             if (this._o.container) return;
-            var field = this._o.trigger, pEl = field,
-            width = this.el.offsetWidth, height = this.el.offsetHeight,
-            viewportWidth = window.innerWidth || document.documentElement.clientWidth,
-            viewportHeight = window.innerHeight || document.documentElement.clientHeight,
-            scrollTop = window.pageYOffset || document.body.scrollTop || document.documentElement.scrollTop,
-            left, top, clientRect;
+
+            this.el.style.position = 'absolute';
+
+            field = this._o.trigger;
+            pEl = field;
+            width = this.el.offsetWidth;
+            height = this.el.offsetHeight;
+            viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+            viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+            scrollTop = window.pageYOffset || document.body.scrollTop || document.documentElement.scrollTop;
 
             if (typeof field.getBoundingClientRect === 'function') {
                 clientRect = field.getBoundingClientRect();
@@ -914,7 +1073,6 @@
                 top = top - height - field.offsetHeight;
             }
 
-            this.el.style.position = 'absolute';
             this.el.style.left = left + 'px';
             this.el.style.top = top + 'px';
         },
@@ -946,14 +1104,14 @@
             for (var i = 0, r = 0; i < cells; i++)
             {
                 var day = new Date(year, month, 1 + (i - before)),
-                    isSelected = isDate(this._d) ? compareDates(day, this._d) : false,
+                    startOfDay = isDate(this._d) ? new Date(this._d.getFullYear() + "-" + (this._d.getMonth() + 1) + "-" + this._d.getDate()) : this._d,
+                    isSelected = isDate(this._d) ? compareDates(day, startOfDay) : false,
                     isToday = compareDates(day, now),
                     isEmpty = i < before || i >= (days + before),
                     isDisabled = (opts.minDate && day < opts.minDate) ||
                                  (opts.maxDate && day > opts.maxDate) ||
                                  (opts.disableWeekends && isWeekend(day)) ||
                                  (opts.disableDayFn && opts.disableDayFn(day));
-
                 row.push(renderDay(1 + (i - before), month, year, isSelected, isToday, isDisabled, isEmpty));
 
                 if (++r === 7) {
