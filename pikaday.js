@@ -503,7 +503,7 @@
             }
 
             if (hasClass(target, 'pika-submit-btn')) {
-                var dayTarget = document.getElementsByClassName('is-selected')[0].childNodes[0];
+                var dayTarget = target.parentNode.parentNode.parentNode.getElementsByClassName('is-selected')[0].childNodes[0];
                 if (!hasClass(dayTarget.parentNode, 'is-disabled')) {
                     if (hasClass(dayTarget, 'pika-button') && !hasClass(dayTarget, 'is-empty')) {
                         self.setDate(new Date(dayTarget.getAttribute('data-pika-year'), dayTarget.getAttribute('data-pika-month'), dayTarget.getAttribute('data-pika-day')), false, opts.showTime);
