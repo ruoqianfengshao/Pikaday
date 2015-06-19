@@ -506,7 +506,7 @@
                 var dayTarget = document.getElementsByClassName('is-selected')[0].childNodes[0];
                 if (!hasClass(dayTarget.parentNode, 'is-disabled')) {
                     if (hasClass(dayTarget, 'pika-button') && !hasClass(dayTarget, 'is-empty')) {
-                        self.setDate(new Date(dayTarget.getAttribute('data-pika-year'), dayTarget.getAttribute('data-pika-month'), dayTarget.getAttribute('data-pika-day')), false);
+                        self.setDate(new Date(dayTarget.getAttribute('data-pika-year'), dayTarget.getAttribute('data-pika-month'), dayTarget.getAttribute('data-pika-day')), false, opts.showTime);
                         if (opts.bound) {
                             sto(function() {
                                 self.hide();
@@ -527,15 +527,7 @@
             } else {
                 if (!hasClass(target.parentNode, 'is-disabled')) {
                     if (hasClass(target, 'pika-button') && !hasClass(target, 'is-empty')) {
-                        self.setDate(new Date(target.getAttribute('data-pika-year'), target.getAttribute('data-pika-month'), target.getAttribute('data-pika-day')));
-                        // if (opts.bound) {
-                        //     sto(function() {
-                        //         self.hide();
-                        //         if (opts.field) {
-                        //             opts.field.blur();
-                        //         }
-                        //     }, 100);
-                        // }
+                        self.setDate(new Date(target.getAttribute('data-pika-year'), target.getAttribute('data-pika-month'), target.getAttribute('data-pika-day')), false, !opts.showTime);
                         return;
                     }
                     else if (hasClass(target, 'pika-prev')) {
@@ -818,7 +810,7 @@
         /**
          * set the current selection
          */
-        setDate: function(date, preventOnSelect)
+        setDate: function(date, preventOnSelect, setTime)
         {
             if (!date) {
                 this._d = null;
@@ -857,9 +849,11 @@
 
             this.gotoDate(this._d);
 
-            if (this._o.field) {
-                this._o.field.value = this.toString();
-                fireEvent(this._o.field, 'change', { firedBy: this });
+            if (setTime) {
+              if (this._o.field) {
+                  this._o.field.value = this.toString();
+                  fireEvent(this._o.field, 'change', { firedBy: this });
+              }
             }
             if (!preventOnSelect && typeof this._o.onSelect === 'function') {
                 this._o.onSelect.call(this, this.getDate());
