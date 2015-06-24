@@ -129,28 +129,44 @@
         if (isDate(date)) date.setHours(0,0,0,0);
     },
 
-    setTimeOfDay = function(date)
+    setTimeOfDay = function(date, opts)
     {
-        var hour, minute, second;
-        if (document.getElementById("pika-hour"))
+        var pikaHour = document.getElementById("pika-hour"),
+            pikaMinute = document.getElementById("pika-minute"),
+            pikaSecond = document.getElementById("pika-second"),
+            hour, minute, second;
+
+        if (opts.showTime)
         {
-          hour = document.getElementById("pika-hour").value;
+            if (pikaHour) {
+              hour = pikaHour.value;
+            } else {
+              hour = date.getHours();
+            }
         } else {
-          hour = 0;
+            hour = 0;
         }
 
-        if (document.getElementById("pika-minute"))
+        if (opts.showTime)
         {
-          minute = document.getElementById("pika-minute").value;
+            if (pikaMinute) {
+              minute = pikaMinute.value;
+            } else {
+              minute = date.getMinutes();
+            }
         } else {
-          minute = 0;
+            minute = 0;
         }
 
-        if (document.getElementById("pika-second"))
+        if (opts.showTime)
         {
-          second = document.getElementById("pika-second").value;
+            if (pikaSecond) {
+              second = pikaSecond.value;
+            } else {
+              second = date.getSeconds();
+            }
         } else {
-          second = 0;
+            second = 0;
         }
 
         if (isDate(date)) date.setHours(hour, minute, second, 0);
@@ -842,7 +858,7 @@
 
             if (this._o.showTime)
             {
-                setTimeOfDay(this._d);
+                setTimeOfDay(this._d, this._o);
             } else {
                 setToStartOfDay(this._d)
             }
