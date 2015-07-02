@@ -129,12 +129,19 @@
         if (isDate(date)) date.setHours(0,0,0,0);
     },
 
-    setTimeOfDay = function(date, opts)
+    setTimeOfDay = function(date, opts, timeGroup)
     {
-        var pikaHour = document.getElementById("pika-hour"),
-            pikaMinute = document.getElementById("pika-minute"),
-            pikaSecond = document.getElementById("pika-second"),
+        var pikaHour = 0,
+            pikaMinute = 0,
+            pikaSecond = 0,
             hour, minute, second;
+
+        if (timeGroup)
+        {
+            pikaHour = timeGroup.pikaHour;
+            pikaMinute = timeGroup.pikaMinute;
+            pikaSecond = timeGroup.pikaSecond;
+        }
 
         if (opts.showTime)
         {
@@ -482,7 +489,7 @@
            str += '<option ' + selected + '>' + i + '</option>';
        }
 
-       return '<label class="pika-time-label">' + timeType[type].title + ':</label><select class="pika-select" id="' + timeType[type].id + '">' + str + '</select>';
+       return '<label class="pika-time-label">' + timeType[type].title + ':</label><select class="pika-select ' + timeType[type].id + ' id="' + timeType[type].id + '">' + str + '</select>';
 
      },
 
@@ -519,10 +526,15 @@
             }
 
             if (hasClass(target, 'pika-submit-btn')) {
-                var dayTarget = target.parentNode.parentNode.parentNode.getElementsByClassName('is-selected')[0].childNodes[0];
+                var board = target.parentNode.parentNode.parentNode,
+                    dayTarget = board.getElementsByClassName('is-selected')[0].childNodes[0],
+                    pikaHour = board.getElementsByClassName("pika-hour")[0],
+                    pikaMinute = board.getElementsByClassName("pika-minute")[0],
+                    pikaSecond = board.getElementsByClassName("pika-second")[0],
+                    timeGroup = {pikaHour, pikaMinute, pikaSecond};
                 if (!hasClass(dayTarget.parentNode, 'is-disabled')) {
                     if (hasClass(dayTarget, 'pika-button') && !hasClass(dayTarget, 'is-empty')) {
-                        self.setDate(new Date(dayTarget.getAttribute('data-pika-year'), dayTarget.getAttribute('data-pika-month'), dayTarget.getAttribute('data-pika-day')), false, opts.showTime);
+                        self.setDate(new Date(dayTarget.getAttribute('data-pika-year'), dayTarget.getAttribute('data-pika-month'), dayTarget.getAttribute('data-pika-day')), false, opts.showTime, timeGroup);
                         if (opts.bound) {
                             sto(function() {
                                 self.hide();
@@ -826,7 +838,7 @@
         /**
          * set the current selection
          */
-        setDate: function(date, preventOnSelect, setTime)
+        setDate: function(date, preventOnSelect, setTime, timeGroup)
         {
             if (!date) {
                 this._d = null;
@@ -858,7 +870,7 @@
 
             if (this._o.showTime)
             {
-                setTimeOfDay(this._d, this._o);
+                setTimeOfDay(this._d, this._o, timeGroup);
             } else {
                 setToStartOfDay(this._d)
             }
