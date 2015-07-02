@@ -343,6 +343,7 @@
             arr.push('is-today');
         }
         if (isSelected) {
+            // debugger;
             arr.push('is-selected');
         }
         return '<td data-day="' + d + '" class="' + arr.join(' ') + '">' +
@@ -537,7 +538,7 @@
                     pikaHour = board.getElementsByClassName("pika-hour")[0],
                     pikaMinute = board.getElementsByClassName("pika-minute")[0],
                     pikaSecond = board.getElementsByClassName("pika-second")[0],
-                    timeGroup = {pikaHour, pikaMinute, pikaSecond};
+                    timeGroup = {pikaHour: pikaHour, pikaMinute: pikaMinute, pikaSecond: pikaSecond};
                 if (!hasClass(dayTarget.parentNode, 'is-disabled')) {
                     if (hasClass(dayTarget, 'pika-button') && !hasClass(dayTarget, 'is-empty')) {
                         self.setDate(new Date(dayTarget.getAttribute('data-pika-year'), dayTarget.getAttribute('data-pika-month'), dayTarget.getAttribute('data-pika-day')), false, opts.showTime, timeGroup);
@@ -559,9 +560,14 @@
                     }
                 }
             } else {
+                var board = target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode,
+                    pikaHour = board.getElementsByClassName("pika-hour")[0],
+                    pikaMinute = board.getElementsByClassName("pika-minute")[0],
+                    pikaSecond = board.getElementsByClassName("pika-second")[0],
+                    timeGroup = {pikaHour: pikaHour, pikaMinute: pikaMinute, pikaSecond: pikaSecond};
                 if (!hasClass(target.parentNode, 'is-disabled')) {
                     if (hasClass(target, 'pika-button') && !hasClass(target, 'is-empty')) {
-                        self.setDate(new Date(target.getAttribute('data-pika-year'), target.getAttribute('data-pika-month'), target.getAttribute('data-pika-day')), false, !opts.showTime);
+                        self.setDate(new Date(target.getAttribute('data-pika-year'), target.getAttribute('data-pika-month'), target.getAttribute('data-pika-day')), false, !opts.showTime, timeGroup);
                         return;
                     }
                     else if (hasClass(target, 'pika-prev')) {
