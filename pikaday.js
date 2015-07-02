@@ -124,6 +124,11 @@
         return [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
     },
 
+    getFormatTime = function(time)
+    {
+        return time < 10 ? "0" + time : time + ""
+    },
+
     setToStartOfDay = function(date)
     {
         if (isDate(date)) date.setHours(0,0,0,0);
@@ -326,6 +331,7 @@
 
     renderDay = function(d, m, y, isSelected, isToday, isDisabled, isEmpty)
     {
+
         if (isEmpty) {
             return '<td class="is-empty"></td>';
         }
@@ -527,7 +533,7 @@
 
             if (hasClass(target, 'pika-submit-btn')) {
                 var board = target.parentNode.parentNode.parentNode,
-                    dayTarget = board.getElementsByClassName('is-selected')[0].childNodes[0],
+                    dayTarget = board.getElementsByClassName('is-selected')[0].getElementsByClassName("pika-day")[0],
                     pikaHour = board.getElementsByClassName("pika-hour")[0],
                     pikaMinute = board.getElementsByClassName("pika-minute")[0],
                     pikaSecond = board.getElementsByClassName("pika-second")[0],
@@ -865,7 +871,6 @@
             } else if (isDate(max) && date > max) {
                 date = max;
             }
-
             this._d = new Date(date.getTime());
 
             if (this._o.showTime)
@@ -1132,7 +1137,7 @@
             for (var i = 0, r = 0; i < cells; i++)
             {
                 var day = new Date(year, month, 1 + (i - before)),
-                    startOfDay = isDate(this._d) ? new Date(this._d.getFullYear() + "-" + (this._d.getMonth() + 1) + "-" + this._d.getDate()) : this._d,
+                    startOfDay = isDate(this._d) ? new Date(this._d.getFullYear(), getFormatTime(this._d.getMonth()), getFormatTime(this._d.getDate())) : this._d,
                     isSelected = isDate(this._d) ? compareDates(day, startOfDay) : false,
                     isToday = compareDates(day, now),
                     isEmpty = i < before || i >= (days + before),
@@ -1140,6 +1145,7 @@
                                  (opts.maxDate && day > opts.maxDate) ||
                                  (opts.disableWeekends && isWeekend(day)) ||
                                  (opts.disableDayFn && opts.disableDayFn(day));
+
                 row.push(renderDay(1 + (i - before), month, year, isSelected, isToday, isDisabled, isEmpty));
 
                 if (++r === 7) {
