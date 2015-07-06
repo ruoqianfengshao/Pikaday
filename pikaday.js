@@ -37,7 +37,7 @@
 
         document = window.document;
 
-    Element.prototype.getElementsByClassName && Element.prototype.getElementsByClassName = function(className)
+    Element.prototype.getElementsByClassName = Element.prototype.getElementsByClassName || function(className)
     {
         var all = this.getElementsByTagName('*');
         var elements = new Array();
