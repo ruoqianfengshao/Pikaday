@@ -85,6 +85,20 @@
         return (' ' + el.className + ' ').indexOf(' ' + cn + ' ') !== -1;
     },
 
+    getElementsByClassName = document.getElementsByClassName ? document.getElementsByClassName : function(className)
+    {
+        var all = document.all ? document.all : document.getElementsByTagName( ' *' );
+        var elements = new Array();
+        for ( var e = ; e < all.length; e ++ ) {
+          if (all[e].className == className) {
+            elements[elements.length] = all[e];
+            break ;
+          }
+        }
+
+        return elements;
+    },
+
     addClass = function(el, cn)
     {
         if (!hasClass(el, cn)) {
@@ -534,10 +548,10 @@
 
             if (hasClass(target, 'pika-submit-btn')) {
                 var board = target.parentNode.parentNode.parentNode,
-                    dayTarget = board.getElementsByClassName('is-selected')[0].getElementsByClassName("pika-day")[0],
-                    pikaHour = board.getElementsByClassName("pika-hour")[0],
-                    pikaMinute = board.getElementsByClassName("pika-minute")[0],
-                    pikaSecond = board.getElementsByClassName("pika-second")[0],
+                    dayTarget = board.getElementsByTagName('is-selected')[0].getElementsByTagName("pika-day")[0],
+                    pikaHour = board.getElementsByTagName("pika-hour")[0],
+                    pikaMinute = board.getElementsByTagName("pika-minute")[0],
+                    pikaSecond = board.getElementsByTagName("pika-second")[0],
                     timeGroup = {pikaHour: pikaHour, pikaMinute: pikaMinute, pikaSecond: pikaSecond};
                 if (!hasClass(dayTarget.parentNode, 'is-disabled')) {
                     if (hasClass(dayTarget, 'pika-button') && !hasClass(dayTarget, 'is-empty')) {
