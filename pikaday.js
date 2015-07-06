@@ -43,14 +43,9 @@
         var elements = new Array();
 
         for ( var e = 0; e < all.length; e ++ ) {
-          var allClassName = all[e].className.split(" ");
-
-          for (var i = 0; i < allClassName.length; i++) {
-            if (allClassName[i] === className){
+            if ( (' ' + all[e] + ' ').indexOf( ' ' + className + ' ') !== -1) {
                 elements[elements.length] = all[e];
-                break;
             }
-          }
         }
 
         return elements;
@@ -162,11 +157,16 @@
             pikaSecond = 0,
             hour, minute, second;
 
+
+
         if (timeGroup)
         {
-            pikaHour = timeGroup.pikaHour;
-            pikaMinute = timeGroup.pikaMinute;
-            pikaSecond = timeGroup.pikaSecond;
+            var hourIndex = timeGroup.pikaHour.selectedIndex;
+            pikaHour = timeGroup.pikaHour.getElementsByTagName("option")[hourIndex];
+            var minuteIndex = timeGroup.pikaMinute.selectedIndex;
+            pikaMinute = timeGroup.pikaMinute.getElementsByTagName("option")[minuteIndex];
+            var secondIndex = timeGroup.pikaSecond.selectedIndex;
+            pikaSecond = timeGroup.pikaSecond.getElementsByTagName("option")[secondIndex];
         }
 
         if (opts.showTime)
@@ -553,17 +553,6 @@
                 return;
             }
 
-            if (!hasClass(target, 'pika-select')) {
-                if (e.preventDefault) {
-                    e.preventDefault();
-                } else {
-                    e.returnValue = false;
-                    return false;
-                }
-            } else {
-                self._c = true;
-            }
-
             if (hasClass(target, 'pika-submit-btn')) {
                 var board = target.parentNode.parentNode.parentNode,
                     dayTarget = board.getElementsByClassName('is-selected')[0].getElementsByClassName("pika-day")[0],
@@ -592,13 +581,13 @@
                     }
                 }
             } else {
-                var board = target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode,
-                    pikaHour = board.getElementsByClassName("pika-hour")[0],
-                    pikaMinute = board.getElementsByClassName("pika-minute")[0],
-                    pikaSecond = board.getElementsByClassName("pika-second")[0],
-                    timeGroup = {pikaHour: pikaHour, pikaMinute: pikaMinute, pikaSecond: pikaSecond};
                 if (!hasClass(target.parentNode, 'is-disabled')) {
                     if (hasClass(target, 'pika-button') && !hasClass(target, 'is-empty')) {
+                    var board = target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode,
+                        pikaHour = board.getElementsByClassName("pika-hour")[0],
+                        pikaMinute = board.getElementsByClassName("pika-minute")[0],
+                        pikaSecond = board.getElementsByClassName("pika-second")[0],
+                        timeGroup = {pikaHour: pikaHour, pikaMinute: pikaMinute, pikaSecond: pikaSecond};
                         self.setDate(new Date(target.getAttribute('data-pika-year'), target.getAttribute('data-pika-month'), target.getAttribute('data-pika-day')), false, !opts.showTime, timeGroup);
                         return;
                     }
@@ -609,6 +598,17 @@
                         self.nextMonth();
                     }
                 }
+            }
+
+            if (!hasClass(target, 'pika-select')) {
+                if (e.preventDefault) {
+                    e.preventDefault();
+                } else {
+                    e.returnValue = false;
+                    return false;
+                }
+            } else {
+                self._c = true;
             }
         };
 
