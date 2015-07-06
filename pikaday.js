@@ -43,7 +43,7 @@
         var elements = new Array();
 
         for ( var e = 0; e < all.length; e ++ ) {
-            if ( (' ' + all[e] + ' ').indexOf( ' ' + className + ' ') !== -1) {
+            if ( (' ' + all[e].className + ' ').indexOf( ' ' + className + ' ') !== -1) {
                 elements[elements.length] = all[e];
             }
         }
@@ -156,8 +156,6 @@
             pikaMinute = 0,
             pikaSecond = 0,
             hour, minute, second;
-
-
 
         if (timeGroup)
         {
