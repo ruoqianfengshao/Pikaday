@@ -85,9 +85,9 @@
         return (' ' + el.className + ' ').indexOf(' ' + cn + ' ') !== -1;
     },
 
-    getElementsByClassName = document.getElementsByClassName ? document.getElementsByClassName : function(className)
+    Element.prototype.getElementsByClassName = Element.prototype.getElementsByClassName ? Element.prototype.getElementsByClassName : function(className)
     {
-        var all = document.all ? document.all : document.getElementsByTagName( ' *' );
+        var all = this.getElementsByTagName( ' *' );
         var elements = new Array();
 
         for ( var e = 0; e < all.length; e ++ ) {
