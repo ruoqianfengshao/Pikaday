@@ -37,14 +37,19 @@
 
         document = window.document;
 
-    Element.prototype.getElementsByClassName = document.getElementsByClassName ? Element.prototype.getElementsByClassName : function(className)
+    Element.prototype.getElementsByClassName = Element.prototype.getElementsByClassName ? Element.prototype.getElementsByClassName : function(className)
     {
         var all = this.getElementsByTagName('*');
         var elements = new Array();
 
         for ( var e = 0; e < all.length; e ++ ) {
-          if (all[e].className == className) {
-            elements[elements.length] = all[e];
+          var allClassName = all[e].className.split(" ");
+
+          for (var i = 0; i < allClassName.length; i++) {
+            if (allClassName[i] === className){
+                elements[elements.length] = all[e];
+                break;
+            }
           }
         }
 
@@ -100,20 +105,6 @@
     {
         return (' ' + el.className + ' ').indexOf(' ' + cn + ' ') !== -1;
     },
-
-    // Element.prototype.getElementsByClassName = document.getElementsByClassName ? Element.prototype.getElementsByClassName : function(className)
-    // {
-    //     var all = this.getElementsByTagName('*');
-    //     var elements = new Array();
-
-    //     for ( var e = 0; e < all.length; e ++ ) {
-    //       if (all[e].className == className) {
-    //         elements[elements.length] = all[e];
-    //       }
-    //     }
-
-    //     return elements;
-    // },
 
     addClass = function(el, cn)
     {
