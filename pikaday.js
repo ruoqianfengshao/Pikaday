@@ -37,7 +37,7 @@
 
         document = window.document;
 
-    Element.prototype.getElementsByClassName = Element.prototype.getElementsByClassName ? Element.prototype.getElementsByClassName : function(className)
+    Element.prototype.getElementsByClassName && Element.prototype.getElementsByClassName = function(className)
     {
         var all = this.getElementsByTagName('*');
         var elements = new Array();
@@ -553,6 +553,17 @@
                 return;
             }
 
+            if (!hasClass(target, 'pika-select')) {
+                if (e.preventDefault) {
+                    e.preventDefault();
+                } else {
+                    e.returnValue = false;
+                    return false;
+                }
+            } else {
+                self._c = true;
+            }
+
             if (hasClass(target, 'pika-submit-btn')) {
                 var board = target.parentNode.parentNode.parentNode,
                     dayTarget = board.getElementsByClassName('is-selected')[0].getElementsByClassName("pika-day")[0],
@@ -598,17 +609,6 @@
                         self.nextMonth();
                     }
                 }
-            }
-
-            if (!hasClass(target, 'pika-select')) {
-                if (e.preventDefault) {
-                    e.preventDefault();
-                } else {
-                    e.returnValue = false;
-                    return false;
-                }
-            } else {
-                self._c = true;
             }
         };
 
