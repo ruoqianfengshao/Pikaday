@@ -17,13 +17,15 @@
 
     <label for="datepicker">Date:(without time)</label>
     <br>
-    <input type="text" id="datepicker-1">
+    <input type="text" id="datepicker-1" name="start">
 
     <br>
 
     <label for="datepicker">Date:(with time)</label>
     <br>
-    <input type="text" id="datepicker-2">
+    <input type="text" id="datepicker-2" name="end">
+
+    <input type="text" id="datepicker-3" name="end">
 
     <h2>What is this?</h2>
 
@@ -37,11 +39,11 @@
     <script src="pikaday.js"></script>
     <script>
 
-    var picker1= new Pikaday(
+    var picker1 = new Pikaday(
     {
         field: document.getElementById('datepicker-1'),
         firstDay: 1,
-        minDate: new Date('2000-01-01'),
+        minDate: new Date('200-01-01'),
         maxDate: new Date('2020-12-31'),
         yearRange: [2000,2020],
         numberOfMonths: 1,
@@ -52,14 +54,25 @@
     {
         field: document.getElementById('datepicker-2'),
         firstDay: 1,
-        minDate: new Date('2000-01-01'),
-        maxDate: new Date('2020-12-31'),
+        minDate: new Date('2015-06-21'),
+        maxDate: new Date('2015-07-27'),
         yearRange: [2000,2020],
         numberOfMonths: 1,
-        format: "YYYY-MM-DD HH:mm:ss",
+        format: "YYYY-MM-DD HH:mm",
         showTime: true
     });
 
+    var picker3 = new Pikaday(
+    {
+        field: document.getElementById('datepicker-3'),
+        firstDay: 1,
+        minDate: new Date('2015-06-21'),
+        maxDate: new Date('2015-07-27'),
+        yearRange: [2000,2020],
+        numberOfMonths: 1,
+        format: "YYYY-MM-DD HH:mm",
+        showTime: true
+    });
     </script>
 </body>
 </html>
