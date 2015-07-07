@@ -25,6 +25,8 @@
     <br>
     <input type="text" id="datepicker-2" name="end">
 
+    <input type="text" id="datepicker-3" name="end">
+
     <h2>What is this?</h2>
 
     <p>Since version 1.0 Pikaday is a stable and battle tested date-picker. Feel free to use it however you like but please report any bugs or feature requests to the <a href="https://github.com/dbushell/Pikaday/issues">GitHub issue tracker</a>, thanks!</p>
@@ -37,29 +39,40 @@
     <script src="pikaday.js"></script>
     <script>
 
-    // var picker1= new Pikaday(
-    // {
-    //     field: document.getElementById('datepicker-1'),
-    //     firstDay: 1,
-    //     minDate: new Date('200-01-01'),
-    //     maxDate: new Date('2020-12-31'),
-    //     yearRange: [2000,2020],
-    //     numberOfMonths: 1,
-    //     format: "YYYY-MM-DD",
-    // });
-    //
-    // var picker2 = new Pikaday(
-    // {
-    //     field: document.getElementById('datepicker-2'),
-    //     firstDay: 1,
-    //     minDate: new Date('2015-06-21'),
-    //     maxDate: new Date('2015-06-27'),
-    //     yearRange: [2000,2020],
-    //     numberOfMonths: 1,
-    //     format: "YYYY-MM-DD HH:mm:ss",
-    //     showTime: true
-    // });
+    var picker1 = new Pikaday(
+    {
+        field: document.getElementById('datepicker-1'),
+        firstDay: 1,
+        minDate: new Date('200-01-01'),
+        maxDate: new Date('2020-12-31'),
+        yearRange: [2000,2020],
+        numberOfMonths: 1,
+        format: "YYYY-MM-DD",
+    });
 
+    var picker2 = new Pikaday(
+    {
+        field: document.getElementById('datepicker-2'),
+        firstDay: 1,
+        minDate: new Date('2015-06-21'),
+        maxDate: new Date('2015-07-27'),
+        yearRange: [2000,2020],
+        numberOfMonths: 1,
+        format: "YYYY-MM-DD HH:mm",
+        showTime: true
+    });
+
+    var picker3 = new Pikaday(
+    {
+        field: document.getElementById('datepicker-3'),
+        firstDay: 1,
+        minDate: new Date('2015-06-21'),
+        maxDate: new Date('2015-07-27'),
+        yearRange: [2000,2020],
+        numberOfMonths: 1,
+        format: "YYYY-MM-DD HH:mm",
+        showTime: true
+    });
     </script>
 </body>
 </html>
